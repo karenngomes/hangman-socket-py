@@ -9,10 +9,10 @@ address = ("localhost", 7000)
 
 letra = ''
 current_client_address = ''
-digitou = False
+typed = False
 
-
-def sendMessagesFromServer(current_socket, message):
+# Send message to all clients
+def broadcast_message(current_socket, message):
     # renomear clients pra colocar socket do servidor tbm
     for client in clients:
         c = client['server_input']
@@ -27,7 +27,7 @@ def connect(server_input, address):
     print('Conectado por', address)
     global letra
     global current_client_address
-    global digitou
+    global typed
 
     while True:
         response = server_input.recv(1024)
@@ -37,7 +37,7 @@ def connect(server_input, address):
         response = response.decode()
 
         if current_client_address == address:
-            digitou = True
+            typed = True
 
         if (response == "sair"):
             print('Cliente', address, 'se desconectou')
@@ -66,7 +66,6 @@ for i in range(num_threads):
 
     client = {}
     client['address'] = address
-    client['thread'] = 'Thread-' + str(i+1)
     client['server_input'] = server_input
     clients.append(client)
 
@@ -77,8 +76,7 @@ for i in range(num_threads):
 
 # Start the game
 print('Iniciou o jogo!!!')
-your_turn = True
-global text
+
 palavra_secreta = ["M", "A", "C", "E", "I", "O"]
 letras_descobertas = []
 
@@ -88,19 +86,16 @@ for i in range(0, len(palavra_secreta)):
 for client in cycle(clients):
 
     text = 'Agora é a vez do ' + str(client['address']) + ' jogar'
-    sendMessagesFromServer(client['server_input'], text)
+    broadcast_message(client['server_input'], text)
 
-    your_turn = True
     acertou = False
 
     current_client_address = client['address']
-    digitou = False
+    typed = False
 
     print('Digite a letra: ')
-    while digitou == False:
+    while typed == False:
         continue
-
-    # print(letra)
 
     for i in range(0, len(palavra_secreta)):
         if letra == palavra_secreta[i]:
@@ -115,7 +110,8 @@ for client in cycle(clients):
             acertou = False
 
     if acertou == True:
-        print('O %s ganhou o jogo, parabéns!' % str(client['address']))
+        text = 'O ' + str(client['address']) + ' ganhou o jogo, parabéns!'
+        broadcast_message(client['server_input'], text)
         break
 
 
