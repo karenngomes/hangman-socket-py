@@ -10,8 +10,16 @@ client_socket.connect(address)
 
 # Echo
 while True:
-    text = input("Informe texto ou digite 'sair' para desconectar: ")
-    client_socket.send(text.encode(encoding='UTF-8'))
-    if (text == "sair"):
-        client_socket.close()
-        break
+    response = client_socket.recv(1024)
+
+    if (len(response) != 0):
+        response = response.decode()
+        print(response)
+
+        if(response == 'Agora é a sua vez de jogar!'):
+            text = input("Digite uma letra: ")
+
+            client_socket.send(text.encode(encoding='UTF-8'))
+            if (text == "sair"):
+                client_socket.close()
+                break
