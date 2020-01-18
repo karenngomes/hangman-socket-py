@@ -77,11 +77,21 @@ for i in range(num_threads):
 # Start the game
 print('Iniciou o jogo!!!')
 
-palavra_secreta = ["M", "A", "C", "E", "I", "O"]
+palavra_secreta = ""
+categoria = ""
 letras_descobertas = []
+qts_erros = 0
+dados = json.load(open('dados.json'))
+categoria = data[item][random.randrange(0, len(data[item]))] #REVISAR
 
-for i in range(0, len(palavra_secreta)):
-    letras_descobertas.append("-")
+print('A categoria é:' ,categoria)
+palavra_secreta = dados[categoria][random.randrange(0, len(dados[categoria]))]
+
+print(letras_descobertas, "\nA palavra contém,", len(palavra_secreta),"letras")
+for j in range(0, len(palavraEscolhida)): 
+        letras_descobertas.append("_")
+        print(letras_descobertas)
+
 
 for client in cycle(clients):
 
@@ -102,6 +112,30 @@ for client in cycle(clients):
             letras_descobertas[i] = letra
 
         print(letras_descobertas[i])
+        
+        else
+        print('Letra errada!')
+        letras_erradas = letra
+        qtd_erros += 1
+        if qtd_erros == 1
+            print('+----+\n|    |\n|    0\n') 
+            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
+        if qtd_erros == 2
+            print('+----+\n|    |\n|    0\n|    |  \n|    |\n|    |\n')
+            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
+        if qtd_erros == 3
+            print('+----+\n|    |\n|    0\n|   /|  \n')
+            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
+        if qtd_erros == 4
+            print('+----+\n|    |\n|    0\n|   /|\ \n')
+            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
+        if qtd_erros == 5
+            print('+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   /   \n')
+            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
+        if qtd_erros == 6
+            print('+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   / \ \n|\n=========\n')
+            print(qtd_erros 'letra(s) errada(s). Fim de jogo! A palavra era:', palavra_secreta)
+
     acertou = True
     letra = ''
 
