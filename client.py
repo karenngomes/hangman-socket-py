@@ -15,7 +15,7 @@ while True:
     if (len(response) != 0):
         response = response.decode()
 
-        if (response == "endgame"):
+        if ('endgame' in response):
             client_socket.send(response.encode(encoding='UTF-8'))
             client_socket.close()
             break

@@ -171,12 +171,12 @@ for client in cycle(clients):
 
             broadcast_message(message=text, send_to_all=True)
         else:
-            text = '6 letras erradas. Fim de jogo! A palavra era: ' + secret_word
+            text = '6 letras erradas. Fim de jogo! A palavra era: ' + secret_word + '\n'
 
             broadcast_message(message=text, send_to_all=True)
             broadcast_message(message='endgame', send_to_all=True)
 
-            server_socket.close()
+            break
 
     else:
         text = " ".join(discovered_letters) + '\n'
