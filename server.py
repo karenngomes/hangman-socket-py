@@ -9,7 +9,7 @@ import random
 address = ("localhost", 7000)
 
 
-letra = ''
+letter = ''
 current_client_address = ''
 typed = False
 
@@ -34,7 +34,7 @@ def broadcast_message(message, current_socket=None, send_to_all=False):
 # Function that gets called instead of run() method
 def connect(server_input, address):
     print('Conectado por', address)
-    global letra
+    global letter
     global current_client_address
     global typed
 
@@ -51,7 +51,7 @@ def connect(server_input, address):
         if current_client_address == address:
             typed = True
 
-        letra = response
+        letter = response
 
     server_input.close()
 
@@ -86,38 +86,39 @@ for i in range(num_threads):
 message = 'Iniciou o jogo!'
 broadcast_message(message=message, send_to_all=True)
 
-letras_descobertas = []
-qtd_erros = 0
-dados = json.load(open('dados.json'))
+discovered_letters = []
+number_of_errors = 0
 
-categoria = list(dados)[random.randint(0, len(dados)-1)]
+# Gets word from json file
+categories = json.load(open('categories.json'))
 
-palavra_secreta = dados[categoria][random.randrange(
-    0, len(dados[categoria])-1)]
+category = list(categories)[random.randint(0, len(categories)-1)]
 
-palavra_secreta = palavra_secreta.upper()
+secret_word = categories[category][random.randrange(
+    0, len(categories[category])-1)]
+secret_word = secret_word.upper()
 
-print('A palavra é:', palavra_secreta)
+print('A palavra é:', secret_word)
 
-message = 'A categoria é: ' + categoria.upper() + '\nA palavra contém ' + \
-    str(len(palavra_secreta)) + ' letras\n'
+message = 'A categoria é: ' + category.upper() + '\nA palavra contém ' + \
+    str(len(secret_word)) + ' letras\n'
 broadcast_message(message=message, send_to_all=True)
 
-for j in range(0, len(palavra_secreta)):
-    letras_descobertas.append("_")
+for j in range(0, len(secret_word)):
+    discovered_letters.append("_")
 
-text = " ".join(letras_descobertas)
+text = " ".join(discovered_letters)
 broadcast_message(message=text, send_to_all=True)
 
-letras_erradas = []
-letra_certa = False
+wrong_letters = []
+right_letter = False
 
 for client in cycle(clients):
 
     text = 'Agora é a vez do ' + str(client['address']) + ' jogar'
     broadcast_message(current_socket=client['server_input'], message=text)
 
-    acertou = False
+    is_correct = False
 
     current_client_address = client['address']
     typed = False
@@ -125,50 +126,49 @@ for client in cycle(clients):
     while typed == False:
         continue
 
-    # print('Letra digitada:', letra)
     text = 'Letra digitada pelo cliente ' + \
-        str(client['address']) + ': ' + letra
+        str(client['address']) + ': ' + letter
     broadcast_message(message=text, send_to_all=True)
 
-    for i in range(0, len(palavra_secreta)):
-        if letra == palavra_secreta[i]:
-            letras_descobertas[i] = letra
-            letra_certa = True
+    for i in range(0, len(secret_word)):
+        if letter == secret_word[i]:
+            discovered_letters[i] = letter
+            right_letter = True
 
-    if letra_certa == False:
-        letras_erradas.append(letra)
+    if right_letter == False:
+        wrong_letters.append(letter)
 
         text = 'O cliente ' + \
             str(client['address']) + \
             ' digitou uma letra errada! Letras erradas até agora: ' + \
-            ", ".join(letras_erradas)
+            ", ".join(wrong_letters)
         broadcast_message(message=text, send_to_all=True)
 
-        qtd_erros += 1
+        number_of_errors += 1
         hangman = ''
 
-        if qtd_erros == 1:
+        if number_of_errors == 1:
             hangman = '+----+\n|    |\n|    0\n'
-        if qtd_erros == 2:
+        if number_of_errors == 2:
             hangman = '+----+\n|    |\n|    0\n|    |  \n|    |\n|    |\n'
-        if qtd_erros == 3:
+        if number_of_errors == 3:
             hangman = '+----+\n|    |\n|    0\n|   /|  \n'
-        if qtd_erros == 4:
+        if number_of_errors == 4:
             hangman = '+----+\n|    |\n|    0\n|   /|\ \n'
-        if qtd_erros == 5:
+        if number_of_errors == 5:
             hangman = '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   /   \n'
-        if qtd_erros == 6:
+        if number_of_errors == 6:
             hangman = '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   / \ \n|\n=========\n'
 
         broadcast_message(message=hangman, send_to_all=True)
 
-        if qtd_erros != 6:
-            text = (" ".join(letras_descobertas)) + '\n' + str(qtd_erros) + ' letra(s) errada(s). Ainda há ' + \
-                str(6-qtd_erros) + ' tentativas!'
+        if number_of_errors != 6:
+            text = (" ".join(discovered_letters)) + '\n' + str(number_of_errors) + ' letra(s) errada(s). Ainda há ' + \
+                str(6-number_of_errors) + ' tentativas!'
 
             broadcast_message(message=text, send_to_all=True)
         else:
-            text = '6 letras erradas. Fim de jogo! A palavra era: ' + palavra_secreta
+            text = '6 letras erradas. Fim de jogo! A palavra era: ' + secret_word
 
             broadcast_message(message=text, send_to_all=True)
             broadcast_message(message='endgame', send_to_all=True)
@@ -176,18 +176,18 @@ for client in cycle(clients):
             server_socket.close()
 
     else:
-        text = " ".join(letras_descobertas)
+        text = " ".join(discovered_letters)
         broadcast_message(message=text, send_to_all=True)
 
-    acertou = True
-    letra = ''
-    letra_certa = False
+    is_correct = True
+    letter = ''
+    right_letter = False
 
-    for x in range(0, len(letras_descobertas)):
-        if letras_descobertas[x] == "_":
-            acertou = False
+    for x in range(0, len(discovered_letters)):
+        if discovered_letters[x] == "_":
+            is_correct = False
 
-    if acertou == True:
+    if is_correct == True:
         text = 'O ' + str(client['address']) + ' ganhou o jogo, parabéns!'
         broadcast_message(message=text, send_to_all=True)
 
