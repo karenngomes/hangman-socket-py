@@ -104,10 +104,13 @@ message = 'A categoria é: ' + category.upper() + '\nA palavra contém ' + \
     str(len(secret_word)) + ' letras\n'
 broadcast_message(message=message, send_to_all=True)
 
-for j in range(0, len(secret_word)):
-    discovered_letters.append("_")
+for i in range(0, len(secret_word)):
+    if secret_word[i] == " ":
+        discovered_letters.append(" ")
+    else: 
+        discovered_letters.append("_")
 
-text = " ".join(discovered_letters)
+text = " ".join(discovered_letters) + '\n'
 broadcast_message(message=text, send_to_all=True)
 
 wrong_letters = []
@@ -176,7 +179,7 @@ for client in cycle(clients):
             server_socket.close()
 
     else:
-        text = " ".join(discovered_letters)
+        text = " ".join(discovered_letters) + '\n'
         broadcast_message(message=text, send_to_all=True)
 
     is_correct = True
@@ -184,7 +187,7 @@ for client in cycle(clients):
     right_letter = False
 
     for x in range(0, len(discovered_letters)):
-        if discovered_letters[x] == "_":
+        if discovered_letters[x] == "_" and discovered_letters[x] != " ":
             is_correct = False
 
     if is_correct == True:

@@ -14,15 +14,15 @@ while True:
 
     if (len(response) != 0):
         response = response.decode()
-        
-        if (response == "endgame"): # rever parte desse codigo
+
+        if (response == "endgame"):
             client_socket.send(response.encode(encoding='UTF-8'))
             client_socket.close()
             break
         else:
             print(response)
 
-        if (response == 'Agora é a sua vez de jogar!'):
+        if ('Agora é a sua vez de jogar!' in response):
             text = input("Digite uma letra: ")
             # tratar texto para pegar só a 1ª letra e que envie como maiuscula
             client_socket.send(text.encode(encoding='UTF-8'))
