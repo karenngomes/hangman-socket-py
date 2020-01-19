@@ -16,6 +16,7 @@ while True:
         response = response.decode()
         
         if (response == "endgame"): # rever parte desse codigo
+            client_socket.send(response.encode(encoding='UTF-8'))
             client_socket.close()
             break
         else:
