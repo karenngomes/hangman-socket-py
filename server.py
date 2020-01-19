@@ -14,6 +14,7 @@ current_client_address = ''
 typed = False
 
 # Send message to all clients
+# receber mais uma flag pra saber o tipo de mensagem pra enviar
 def broadcast_message(current_socket, message):
     # renomear clients pra colocar socket do servidor tbm
     for client in clients:
@@ -77,17 +78,13 @@ for i in range(num_threads):
     new_thread.start()
 
 # Start the game
-print('Iniciou o jogo!!!')
+print('Iniciou o jogo!') # mandar isso para todos
 
-palavra_secreta = ""
-categoria = ""
 letras_descobertas = []
 qtd_erros = 0
 dados = json.load(open('dados.json'))
 
 categoria = list(dados)[random.randint(0, len(dados)-1)]
-
-# print('A categoria é:', categoria.upper())
 
 palavra_secreta = dados[categoria][random.randrange(
     0, len(dados[categoria])-1)]
@@ -96,12 +93,14 @@ palavra_secreta = palavra_secreta.upper()
 
 print(palavra_secreta)  # tirar isso depois
 
+# mandar isso para todos
 print('A categoria é:', categoria.upper(),
       "\nA palavra contém", len(palavra_secreta), "letras")
 
 for j in range(0, len(palavra_secreta)):
     letras_descobertas.append("_")
 
+# mandar isso para todos
 print(" ".join(letras_descobertas))
 
 letras_erradas = []
@@ -110,7 +109,7 @@ letra_certa = False
 for client in cycle(clients):
 
     text = 'Agora é a vez do ' + str(client['address']) + ' jogar'
-    broadcast_message(client['server_input'], text)
+    broadcast_message(client['server_input'], text) # mandar de acordo com a flag( ver nome da flag)
 
     acertou = False
 
@@ -129,6 +128,7 @@ for client in cycle(clients):
     if letra_certa == False:
         letras_erradas.append(letra)
 
+        # mandar isso para todos | mudar msg para: "o [client] digitou uma letra errada! Letras erradas.."
         print('Letra errada!\nLetras erradas até agora:',
               ", ".join(letras_erradas))
         qtd_erros += 1
@@ -145,15 +145,18 @@ for client in cycle(clients):
             print('+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   /   \n')
 
         if qtd_erros != 6:
+            # mandar isso para todos e mudar mensagem (tirar o você)
             print(qtd_erros, 'letra(s) errada(s). Você tem mais',
                   str(6-qtd_erros), 'tentativas!')
             print(" ".join(letras_descobertas))
         else:
+            # mandar isso para todos; personalizar mensagem (?) | flag que diz que jogo acabou
             print(
                 '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   / \ \n|\n=========\n')
             print('6 letras erradas. Fim de jogo! A palavra era:', palavra_secreta)
 
     else:
+        # mandar isso para todos
         print(" ".join(letras_descobertas))
 
     acertou = True
@@ -164,9 +167,9 @@ for client in cycle(clients):
         if letras_descobertas[x] == "_":
             acertou = False
 
-
     if acertou == True:
         text = 'O ' + str(client['address']) + ' ganhou o jogo, parabéns!'
+        # flag que diz que jogo acabou
         broadcast_message(client['server_input'], text)
         break
 
