@@ -3,6 +3,8 @@
 import socket
 import threading
 from itertools import cycle
+import json
+import random
 
 address = ("localhost", 7000)
 
@@ -80,18 +82,30 @@ print('Iniciou o jogo!!!')
 palavra_secreta = ""
 categoria = ""
 letras_descobertas = []
-qts_erros = 0
+qtd_erros = 0
 dados = json.load(open('dados.json'))
-categoria = data[item][random.randrange(0, len(data[item]))] #REVISAR
 
-print('A categoria é:' ,categoria)
-palavra_secreta = dados[categoria][random.randrange(0, len(dados[categoria]))]
+categoria = list(dados)[random.randint(0, len(dados)-1)]
 
-print(letras_descobertas, "\nA palavra contém,", len(palavra_secreta),"letras")
-for j in range(0, len(palavraEscolhida)): 
-        letras_descobertas.append("_")
-        print(letras_descobertas)
+# print('A categoria é:', categoria.upper())
 
+palavra_secreta = dados[categoria][random.randrange(
+    0, len(dados[categoria])-1)]
+
+palavra_secreta = palavra_secreta.upper()
+
+print(palavra_secreta)  # tirar isso depois
+
+print('A categoria é:', categoria.upper(),
+      "\nA palavra contém", len(palavra_secreta), "letras")
+
+for j in range(0, len(palavra_secreta)):
+    letras_descobertas.append("_")
+
+print(" ".join(letras_descobertas))
+
+letras_erradas = []
+letra_certa = False
 
 for client in cycle(clients):
 
@@ -103,45 +117,53 @@ for client in cycle(clients):
     current_client_address = client['address']
     typed = False
 
-    print('Digite a letra: ')
     while typed == False:
         continue
 
+    print('Letra digitada:', letra)
     for i in range(0, len(palavra_secreta)):
         if letra == palavra_secreta[i]:
             letras_descobertas[i] = letra
+            letra_certa = True
 
-        print(letras_descobertas[i])
-        
-        else
-        print('Letra errada!')
-        letras_erradas = letra
+    if letra_certa == False:
+        letras_erradas.append(letra)
+
+        print('Letra errada!\nLetras erradas até agora:',
+              ", ".join(letras_erradas))
         qtd_erros += 1
-        if qtd_erros == 1
-            print('+----+\n|    |\n|    0\n') 
-            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
-        if qtd_erros == 2
+
+        if qtd_erros == 1:
+            print('+----+\n|    |\n|    0\n')
+        if qtd_erros == 2:
             print('+----+\n|    |\n|    0\n|    |  \n|    |\n|    |\n')
-            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
-        if qtd_erros == 3
+        if qtd_erros == 3:
             print('+----+\n|    |\n|    0\n|   /|  \n')
-            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
-        if qtd_erros == 4
+        if qtd_erros == 4:
             print('+----+\n|    |\n|    0\n|   /|\ \n')
-            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
-        if qtd_erros == 5
+        if qtd_erros == 5:
             print('+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   /   \n')
-            print(qtd_erros 'letra(s) errada(s). Você tem mais', 6-qtd_erros, 'tentativas!')
-        if qtd_erros == 6
-            print('+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   / \ \n|\n=========\n')
-            print(qtd_erros 'letra(s) errada(s). Fim de jogo! A palavra era:', palavra_secreta)
+
+        if qtd_erros != 6:
+            print(qtd_erros, 'letra(s) errada(s). Você tem mais',
+                  str(6-qtd_erros), 'tentativas!')
+            print(" ".join(letras_descobertas))
+        else:
+            print(
+                '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   / \ \n|\n=========\n')
+            print('6 letras erradas. Fim de jogo! A palavra era:', palavra_secreta)
+
+    else:
+        print(" ".join(letras_descobertas))
 
     acertou = True
     letra = ''
+    letra_certa = False
 
     for x in range(0, len(letras_descobertas)):
-        if letras_descobertas[x] == "-":
+        if letras_descobertas[x] == "_":
             acertou = False
+
 
     if acertou == True:
         text = 'O ' + str(client['address']) + ' ganhou o jogo, parabéns!'
