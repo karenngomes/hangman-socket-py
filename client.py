@@ -23,6 +23,8 @@ while True:
             print(response)
 
         if ('Agora é a sua vez de jogar!' in response):
-            text = input("Digite uma letra: ")
-            # tratar texto para pegar só a 1ª letra e que envie como maiuscula
+            text = input(
+                "Digite uma letra (se for digitada mais de uma, só a primeira será considerada): ")[0]
+            text = text.upper()
+
             client_socket.send(text.encode(encoding='UTF-8'))
