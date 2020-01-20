@@ -151,15 +151,15 @@ for client in cycle(clients):
         hangman = ''
 
         if number_of_errors == 1:
-            hangman = '+----+\n|    |\n|    0\n'
+            hangman = '+----+\n|    |\n|    0\n|       \n|     \n|     \n|\n=========\n'
         if number_of_errors == 2:
-            hangman = '+----+\n|    |\n|    0\n|    |  \n|    |\n|    |\n'
+            hangman = '+----+\n|    |\n|    0\n|    |  \n|    |\n|    |\n|\n=========\n'
         if number_of_errors == 3:
-            hangman = '+----+\n|    |\n|    0\n|   /|  \n'
+            hangman = '+----+\n|    |\n|    0\n|   /|  \n|    |\n|    |\n|\n=========\n'
         if number_of_errors == 4:
-            hangman = '+----+\n|    |\n|    0\n|   /|\ \n'
+            hangman = '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|\n=========\n'
         if number_of_errors == 5:
-            hangman = '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   /   \n'
+            hangman = '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   /   \n|\n=========\n'
         if number_of_errors == 6:
             hangman = '+----+\n|    |\n|    0\n|   /|\ \n|    |\n|    |\n|   / \ \n|\n=========\n'
 
