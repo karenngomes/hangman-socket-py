@@ -107,7 +107,7 @@ broadcast_message(message=message, send_to_all=True)
 for i in range(0, len(secret_word)):
     if secret_word[i] == " ":
         discovered_letters.append(" ")
-    else: 
+    else:
         discovered_letters.append("_")
 
 text = " ".join(discovered_letters) + '\n'
@@ -139,12 +139,21 @@ for client in cycle(clients):
             right_letter = True
 
     if right_letter == False:
-        wrong_letters.append(letter)
 
         text = 'O cliente ' + \
-            str(client['address']) + \
-            ' digitou uma letra errada! Letras erradas até agora: ' + \
+            str(client['address']) + ' digitou uma letra errada!\n'
+
+        if letter not in wrong_letters:
+            wrong_letters.append(letter)
+        else:
+            letter_in_wrong_letters = 'Esta letra já tinha sido digitada, porém o cliente ' + \
+                str(client['address']) + ' perdeu sua vez!\n'
+            text += letter_in_wrong_letters
+
+        wrong_letters_str = 'Letras erradas até agora: ' + \
             ", ".join(wrong_letters)
+        text += wrong_letters_str
+
         broadcast_message(message=text, send_to_all=True)
 
         number_of_errors += 1
